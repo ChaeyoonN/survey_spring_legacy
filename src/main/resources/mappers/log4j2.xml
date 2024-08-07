@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="INFO">    
+	<Properties>
+        <Property name="logNm">Spring Log4j2</Property>
+        <Property name="layoutPattern">%style{%d{yyyy/MM/dd HH:mm:ss,SSS}}{cyan} %highlight{[%-5p]}{FATAL=bg_red, ERROR=red,
+            INFO=green, DEBUG=blue}  [%C] %style{[%t]}{yellow} %m%n</Property>
+    </Properties>
+	<Appenders>        
+		<Console name="console" target="SYSTEM_OUT">            
+		<PatternLayout 
+		pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"/>
+        </Console>    
+	</Appenders>    
+    <Loggers>        
+    	<Root level="debug" additivity="false">            
+        	<AppenderRef ref="console"/>        
+        </Root>
+           
+		<!--하단 name에 본인이 사용하는 package명으로 수정할 것-->
+        <Logger name="com.spring.survey" level="INFO" additivity="false">
+            <AppenderRef ref="console" />
+        </Logger>
+    	<!-- 3rdparty Loggers -->
+		<Logger name="org.springframework.core">
+			<level value="info" />
+		</Logger>
+		
+		<Logger name="org.springframework.beans">
+			<level value="info" />
+		</Logger>
+		
+		<Logger name="org.springframework.context">
+			<level value="info" />
+		</Logger>
+	
+		<Logger name="org.springframework.web">
+			<level value="info" />
+		</Logger>
+      
+		<!-- SQL 로그 출력을 위한 설정 추가 시작 -->
+		<Logger name="jdbc.sqlonly" additivity="false"> 
+			<level value="info"/> 
+			<appender-ref ref="console"/> 
+		</Logger>
+		<Logger name="jdbc.sqltiming" additivity="false">
+			<level value="warn" />
+			<appender-ref ref="console"/> 
+		</Logger>
+		<Logger name="jdbc.audit" additivity="false"> 
+			<level value="warn"/>  
+			<appender-ref ref="console"/> 
+		</Logger> 
+	
+		<Logger name="jdbc.resultset" additivity="false">
+			<level value="warn" />
+			<appender-ref ref="console"/> 
+		</Logger>
+	
+		<Logger name="jdbc.resultsettable" additivity="false"> 
+			<level value="info"/>  
+			<appender-ref ref="console"/> 
+		</Logger>
+	</Loggers>
+</Configuration>

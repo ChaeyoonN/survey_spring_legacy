@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.survey.mapper.ISurveyMapper">
+		<!-- 
+        # 동적 SQL 쿼리
+        미리 쿼리문을 준비해 놓고, <include refid="이름(id)" /> 를 통해 삽입하여 사용.
+     -->
+     <sql id="search">
+     	<if test="condition =='title'">
+     		WHERE title LIKE '%'||#{keyword}||'%'
+     	</if>
+     	
+<!--      	<if test="condition =='content'"> -->
+<!--      		WHERE content LIKE '%'||#{keyword}||'%' -->
+<!--      	</if> -->
+     	
+<!--      	<if test="condition =='writer'"> -->
+<!--      		WHERE writer LIKE '%'||#{keyword}||'%' -->
+<!--      	</if> -->
+     	
+<!--      	<if test="condition =='titleContent'"> -->
+<!--      		WHERE title LIKE '%'||#{keyword}||'%' -->
+<!--      		OR content LIKE '%'||#{keyword}||'%' -->
+<!--      	</if> -->
+     </sql>
+     
+	<select id="getTotal" resultType="int">
+		SELECT COUNT(*) FROM SURVEY
+		<include refid="search"></include>
+	</select>
+	
+	<select id="getList" resultType="Survey"> 
+		SELECT * FROM	
+			(
+			SELECT ROWNUM AS rn, tbl.*
+				FROM	
+				(
+				SELECT * FROM SURVEY
+				<include refid="search" />
+				ORDER BY survey_id DESC
+				) tbl
+			)
+		<!-- CDATA: Character Data의 약자로, 마크업 언어에서 문자열 데이터를 표기하기 위한 문법입니다.
+			특수 문자 등을 태그가 아니라 순수한 문자로 표기하고 싶을 때 사용하는 태그입니다. -->
+		<![CDATA[
+		WHERE rn > #{pageStart} 
+		AND rn <= #{pageEnd}
+		]]>
+	</select>
+	
+	<!-- 검색결과 목록 엑셀 다운로드 위한 쿼리 -->
+	<select id="getExcelList" resultType="Survey"> 
+		SELECT * FROM	
+			(
+			SELECT ROWNUM AS rn, tbl.*
+				FROM	
+				(
+				SELECT * FROM SURVEY
+				<include refid="search" />
+				ORDER BY survey_id DESC
+				) tbl
+			)
+	</select>
+	<select id="selectAllSurveys" resultType="Survey">
+    	SELECT * FROM survey
+    	ORDER BY survey_id DESC
+	</select>
+	
+	<insert id="regist">
+	  <selectKey keyProperty="surSeq" resultType="string" order="BEFORE">
+	    SELECT SEQ_SUR.NEXTVAL FROM DUAL
+	  </selectKey>
+	  INSERT INTO TB_06_RS (SUR_SEQ, SUR_TITLE, QUE_CNT, SUR_SAT_DATE, SUR_END_DATE, WRITER, REG_NAME, UDT_NAME)
+	  VALUES (#{surSeq}, #{surTitle}, #{queCnt}, #{surSatDate}, #{surEndDate}, #{writer}, #{regName}, #{udtName})
+	</insert>
+	<insert id="registRSQ">
+	  <selectKey keyProperty="surSeq" resultType="string" order="BEFORE">
+	    SELECT SEQ_SUR.NEXTVAL FROM DUAL
+	  </selectKey>
+	  INSERT INTO TB_06_RS (SUR_SEQ, SUR_TITLE, QUE_CNT, SUR_SAT_DATE, SUR_END_DATE, WRITER, REG_NAME, UDT_NAME)
+	  VALUES (#{surSeq}, #{surTitle}, #{queCnt}, #{surSatDate}, #{surEndDate}, #{writer}, #{regName}, #{udtName})
+	</insert>
+	<!-- 등록 -->
+    <insert id="createSurvey" parameterType="com.spring.survey.entity.Survey" useGeneratedKeys="true" keyProperty="surveyId">
+       <selectKey keyProperty="surveyId" resultType="long" order="BEFORE">
+	    SELECT survey_seq.NEXTVAL FROM DUAL
+	  </selectKey>
+        INSERT INTO Survey (survey_id, title, start_date, end_date, creator, created_at, updated_at)
+        VALUES (#{surveyId}, #{title}, #{startDate}, #{endDate}, #{creator}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    </insert>
+    <insert id="createQuestion" parameterType="com.spring.survey.entity.Question" useGeneratedKeys="true" keyProperty="questionId">
+      <selectKey keyProperty="questionId" resultType="long" order="BEFORE">
+	    SELECT question_seq.nextval FROM DUAL
+	  </selectKey>
+        INSERT INTO Survey_Question (question_id, survey_id, question_text)
+        VALUES (#{questionId}, #{surveyId}, #{questionText})
+    </insert>
+    <insert id="createOption" parameterType="com.spring.survey.entity.Option" useGeneratedKeys="true" keyProperty="optionId">
+      <selectKey keyProperty="optionId" resultType="long" order="BEFORE">
+	    SELECT option_seq.nextval FROM DUAL
+	  </selectKey>
+        INSERT INTO Survey_Option (option_id, question_id, option_text)
+        VALUES (#{optionId}, #{questionId}, #{optionText})
+    </insert>
+    
+    <insert id="insertSurveyFile" parameterType="com.spring.survey.entity.SurveyFile" useGeneratedKeys="true" keyProperty="fileId">
+       <selectKey keyProperty="fileId" resultType="long" order="BEFORE">
+	    SELECT file_seq.NEXTVAL FROM DUAL
+	  </selectKey>
+        INSERT INTO survey_File (file_id, survey_id, file_name, file_path, file_size, created_at, origin_file_name)
+        VALUES (#{fileId}, #{surveyId}, #{fileName}, #{filePath}, #{fileSize}, CURRENT_TIMESTAMP, #{originFileName})
+    </insert>
+	
+	<!-- 상세 -->
+	<select id="findByUserId" parameterType="string" resultType="Member">
+        SELECT * FROM TB_00_MEMBER WHERE user_id = #{userId}
+    </select>
+    
+    <select id="findAllExceptCreator" parameterType="string" resultType="Member">
+        SELECT * FROM TB_00_MEMBER WHERE user_id != #{userId}
+    </select>
+	
+	<update id="insertPw" parameterType="map">
+	    UPDATE TB_00_MEMBER
+	    SET password = #{secretPw}
+	    WHERE user_id = #{userId}
+	</update>
+	
+	<select id="selectAllMembers" resultType="Member">
+        SELECT USER_ID, PASSWORD, USER_NAME, PHONE, EMAIL, ADMIN_YN, REG_DATE
+        FROM TB_00_MEMBER
+    </select>
+    
+    <select id="selectAllInterfaceMembers" resultType="Member">
+        SELECT USER_ID, PASSWORD, USER_NAME, PHONE, EMAIL, ADMIN_YN, REG_DATE
+        FROM INTERFACE_MEMBER
+    </select>
+
+    <insert id="insertMember">
+        INSERT INTO Interface_member (USER_ID, PASSWORD, USER_NAME, PHONE, EMAIL, ADMIN_YN, REG_DATE)
+        VALUES (#{userId}, #{password}, #{userName}, #{phone}, #{email}, #{adminYn}, #{regDate})
+    </insert>
+
+    <update id="updateMember">
+        UPDATE Interface_member
+        SET PASSWORD = #{password}, USER_NAME = #{userName}, PHONE = #{phone}, EMAIL = #{email}, ADMIN_YN = #{adminYn}, REG_DATE = #{regDate}
+        WHERE USER_ID = #{userId}
+    </update>
+    
+    <delete id="deleteAllMember">
+        DELETE FROM Interface_member
+    </delete>
+    
+    <delete id="deleteMember">
+        DELETE FROM Interface_member
+        WHERE USER_ID = #{userId}
+    </delete>
+    
+    <select id="selectMembersNotInTb00" resultType="Member">
+        SELECT * FROM interface_member im
+        WHERE im.user_id NOT IN (SELECT user_id FROM tb_00_member)
+    </select>
+    
+    <select id="selectMembersInTb00" resultType="Member">
+        SELECT * FROM interface_member im
+        WHERE im.user_id IN (SELECT user_id FROM tb_00_member)
+    </select>
+	
+	<!-- 상세보기 -->
+	<select id="findById" resultMap="SurveyDetailResultMap">
+	    SELECT 
+	        s.survey_id, 
+	        s.title, 
+	        s.start_date, 
+	        s.end_date, 
+	        s.creator, 
+	        s.created_at, 
+	        s.updated_at,
+	        q.question_id, 
+	        q.question_text,
+	        o.option_id, 
+	        o.option_text
+	    FROM 
+	        Survey s
+	    LEFT JOIN survey_Question q ON s.survey_id = q.survey_id
+	    LEFT JOIN survey_Option o ON q.question_id = o.question_id
+	    WHERE 
+	        s.survey_id = #{surveyId}
+	    ORDER BY question_id, option_id ASC
+	</select>
+	<resultMap id="SurveyDetailResultMap" type="com.spring.survey.entity.Survey">
+	    <id property="surveyId" column="survey_id" />
+	    <result property="title" column="title" />
+	    <result property="startDate" column="start_date" />
+	    <result property="endDate" column="end_date" />
+	    <result property="creator" column="creator" />
+	    <result property="createdAt" column="created_at" />
+	    <result property="updatedAt" column="updatedAt" />
+	
+	    <collection property="questions" ofType="com.spring.survey.entity.Question">
+	        <id property="questionId" column="question_id" />
+	        <result property="questionText" column="question_text" />
+	
+	        <collection property="options" ofType="com.spring.survey.entity.Option">
+	            <id property="optionId" column="option_id" />
+	            <result property="optionText" column="option_text" />
+	        </collection>
+	    </collection>
+	</resultMap>
+	<!-- 설문id로 파일 조회 -->
+	<select id="filesBySurveyId" resultType="com.spring.survey.entity.SurveyFile">
+	    select 
+	    	file_id AS fileId,
+            survey_id AS surveyId,
+            file_name AS fileName,
+            file_path AS filePath,
+            file_size AS fileSize,
+            created_at AS createdAt,
+            origin_file_name AS originFileName
+	    from survey_file
+	    WHERE 
+	        survey_id = #{surveyId}
+	    ORDER BY file_id ASC
+	</select>
+	<!-- 파일 다운로드 -->
+	<select id="findByFileId" resultType="com.spring.survey.dto.response.SurveyFileResponseDTO">
+	    select 
+	    	file_id AS fileId,
+            survey_id AS surveyId,
+            file_name AS fileName,
+            file_path AS filePath,
+            file_size AS fileSize
+	    from survey_file
+	    WHERE 
+	        file_id = #{fileId}
+	</select>
+	
+	<!-- 삭제 -->
+	<delete id="deleteFileBySurveyId" parameterType="long">
+        DELETE FROM Survey_File 
+        WHERE survey_id = #{surveyId}
+    </delete>
+    <delete id="deleteFileByFileId" parameterType="long">
+        DELETE FROM Survey_File 
+        WHERE file_id = #{fileId}
+    </delete>
+    
+    <!-- 기존 파일 ID 목록이 있으면 해당 파일들만 제외하고 삭제 -->
+    <delete id="deleteFilesExcept">
+        DELETE FROM Survey_File
+        WHERE survey_id = #{surveyId}
+        <if test="existingFileIds != null and !existingFileIds.isEmpty()">
+            AND file_id NOT IN
+            <foreach item="fileId" collection="existingFileIds" open="(" separator="," close=")">
+                #{fileId}
+            </foreach>
+        </if>
+    </delete>
+    
+	<delete id="deleteSurveyResultBySurveyId" parameterType="long">
+        DELETE FROM Survey_Result WHERE survey_id = #{surveyId}
+    </delete>
+	<delete id="deleteSurveyOptionsBySurveyId" parameterType="long">
+	    DELETE FROM survey_Option WHERE question_id IN (
+	        SELECT question_id FROM survey_Question WHERE survey_id = #{surveyId}
+	    )
+	</delete>
+	
+	<delete id="deleteSurveyQuestionsBySurveyId" parameterType="long">
+	    DELETE FROM survey_Question WHERE survey_id = #{surveyId}
+	</delete>
+	
+	<delete id="deleteSurveyById" parameterType="long">
+	    DELETE FROM Survey WHERE survey_id = #{surveyId}
+	</delete>
+
+    <!-- 수정 -->
+    <update id="updateSurvey" parameterType="com.spring.survey.entity.Survey">
+        UPDATE Survey
+        SET title = #{title},
+            start_date = #{startDate},
+            end_date = #{endDate},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE survey_id = #{surveyId}
+    </update>
+    
+    <!-- 설문 참여 -->
+    <insert id="insertSurveyResult">
+    INSERT INTO Survey_Result (result_id, survey_id, question_id, option_id, sel_option_num, reason, user_id, response_date)
+    VALUES (result_seq.NEXTVAL, #{surveyId}, #{questionId}, #{optionId}, #{selOptionNum}, #{reason}, #{userId}, CURRENT_TIMESTAMP)
+    </insert>
+    
+	<!-- 사용자의 설문 참여 여부 확인 (참:0, 거짓:1) -->
+	<select id="hasUserParticipated" parameterType="map" resultType="boolean">
+	    SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END
+	    FROM Survey_Result
+	    WHERE survey_id = #{surveyId} AND user_id = #{userId}
+	</select>
+    
+    <!-- 설문정보를 설문 결과와 같이 조회 -->
+    <resultMap id="SurveyResultResultMap" type="SurveyResultResponseDTO">
+	    <id property="surveyId" column="survey_id" />
+	    <result property="title" column="title" />
+	    <result property="startDate" column="start_date" />
+	    <result property="endDate" column="end_date" />
+	    <result property="creator" column="creator" />
+	
+	    <collection property="questions" ofType="QuestionDTO">
+	        <id property="questionId" column="question_id" />
+	        <result property="questionText" column="question_text" />
+	
+	        <collection property="options" ofType="OptionDTO">
+	            <id property="optionId" column="option_id" />
+	            <result property="optionText" column="option_text" />
+	        </collection>
+	    </collection>
+	
+	    <collection property="results" ofType="SurveyResultDTO">
+	        <id property="resultId" column="result_id" />
+	        <result property="surveyId" column="survey_id" />
+	        <result property="questionId" column="question_id" />
+	        <result property="optionId" column="option_id" />
+	        <result property="selOptionNum" column="sel_option_num" />
+	        <result property="reason" column="reason" />
+	        <result property="userId" column="user_id" />
+	        <result property="responseDate" column="response_date" />
+	    </collection>
+	</resultMap>
+    <select id="getSurveyResults" parameterType="long" resultMap="SurveyResultResultMap">
+        SELECT 
+	        s.survey_id, 
+	        s.title, 
+	        s.start_date, 
+	        s.end_date, 
+	        s.creator, 
+	        s.created_at, 
+	        s.updated_at,
+	        q.question_id, 
+	        q.question_text,
+	        o.option_id, 
+	        o.option_text,
+            r.*
+	    FROM 
+	        Survey s
+	    LEFT JOIN survey_Question q ON s.survey_id = q.survey_id
+	    LEFT JOIN survey_Option o ON q.question_id = o.question_id
+        LEFT JOIN survey_result r ON r.survey_id = s.survey_id
+	    WHERE 
+	        s.survey_id = #{surveyId}
+    </select>
+	
+	<!-- 설문 결과 조회 -->
+    <select id="selectSurveyResults" resultType="SurveyResult">
+        SELECT
+            sr.result_id AS "resultId",
+            sr.survey_id AS "surveyId",
+            sr.question_id AS "questionId",
+            sr.option_id AS "optionId",
+            sr.sel_option_num AS "selOptionNum",
+            sr.reason,
+            sr.user_id AS "userId",
+            sr.response_date AS "responseDate"
+        FROM
+            survey_result sr
+        WHERE
+            sr.survey_id = #{surveyId}
+    </select>
+
+	<!-- 설문 질문별 옵션 응답 수 집계 + o.option_text 조인 -->
+    <select id="countResponsesPerOption" resultType="java.util.Map">
+        SELECT 
+            sr.survey_id AS "surveyId",
+            sr.question_id AS "questionId",
+            sr.option_id AS "optionId",
+            o.option_text AS "optionText",
+            sr.sel_option_num AS "selOptionNum",
+            COUNT(sr.option_id) AS "responseCount"
+        FROM
+            survey_result sr 
+            left join survey_option o 
+            on sr.option_id = o.option_id
+        WHERE
+            sr.survey_id = #{surveyId}
+        GROUP BY
+            sr.survey_id, sr.question_id, sr.option_id, o.option_text, sr.sel_option_num
+    </select>
+    
+    <!-- 설문 문제별 옵션별 응답자수 -->
+    <select id="countResponsesByQuestion" resultType="java.util.Map">
+        SELECT 
+            survey_id AS "surveyId", 
+            question_id AS "questionId", 
+            option_id AS "optionId", 
+            COUNT(*) AS "responseCount"
+        FROM 
+            survey_result
+        WHERE
+            survey_id = #{surveyId} AND question_id = #{questionId}
+        GROUP BY 
+            survey_id, question_id, option_id
+    </select>
+    <!-- 설문id로 모든 질문의 옵션 가져오기 -->
+    <select id="selectAllOptionsForSurvey" resultType="java.util.Map">
+        select * from survey_option o
+		where question_id in (
+	        SELECT question_id FROM survey_Question WHERE survey_id = #{surveyId}
+	    )
+    </select>
+    <!-- 특정 설문의 참여자수 가져오기 -->
+    <select id="getParticipantCount" resultType="int">
+        SELECT
+            COUNT(DISTINCT sr.user_id) AS participantCount
+        FROM
+            survey_result sr
+        WHERE
+            sr.survey_id = #{surveyId}
+    </select>
+    
+    <!-- 설문에 참여한 회원들의 이메일 조회 -->
+    <select id="findPhoneEmailBySurveyId" resultType="Member">
+        SELECT DISTINCT m.user_id, m.phone, m.EMAIL
+        FROM Survey_Result sr
+        JOIN TB_00_MEMBER m ON sr.user_id = m.USER_ID
+        WHERE sr.survey_id = #{surveyId}
+    </select>
+    
+    <!-- 이메일 발송 여부 업데이트 -->
+	<update id="updateEmailSentStatus" parameterType="map">
+	    UPDATE survey
+	    SET fin_email_sent = #{finEmailSent}
+	    WHERE survey_id = #{surveyId}
+	</update>
+	
+	<!-- 이메일 발송 여부 확인 -->
+	<select id="checkEmailSentStatus" resultType="string" parameterType="long">
+	    SELECT fin_email_sent
+	    FROM survey
+	    WHERE survey_id = #{surveyId}
+	</select>
+	<!-- 나의 글 조회 -->
+	<sql id="mySearch">
+     	<if test="page.condition =='title'">
+     		AND title LIKE '%'||#{page.keyword}||'%'
+     	</if>
+     </sql>
+     <select id="getMyTotal" resultType="int">
+		SELECT COUNT(*) FROM SURVEY
+		WHERE creator = #{userId}
+		<include refid="mySearch"></include>
+	</select>
+	<select id="getMyList" resultType="Survey"> 
+		SELECT * FROM	
+			(
+			SELECT ROWNUM AS rn, tbl.*
+				FROM	
+				(
+				SELECT * FROM SURVEY
+				WHERE creator = #{userId}
+				<include refid="mySearch" />
+				ORDER BY survey_id DESC
+				) tbl
+			)
+		<![CDATA[
+		WHERE rn > #{page.pageStart} 
+		AND rn <= #{page.pageEnd}
+		]]>
+	</select>
+	
+</mapper>

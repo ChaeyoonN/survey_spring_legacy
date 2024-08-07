@@ -1,0 +1,357 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>survey</groupId>
+  <artifactId>survey</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <!-- 글로벌 자바 버전, 스프링 버전 변경 -->
+   <properties>
+      <java-version>17</java-version>
+      <org.springframework-version>5.3.20</org.springframework-version>
+      <org.aspectj-version>1.6.10</org.aspectj-version>
+      <org.slf4j-version>1.6.6</org.slf4j-version>
+      <spring.security.version>5.5.7</spring.security.version>
+   </properties>
+
+   <!-- 의존성 라이브러리들을 모아놓는 공간 -->
+   <dependencies>
+      <!-- Spring Batch -->
+	    <dependency>
+	        <groupId>org.springframework.batch</groupId>
+	        <artifactId>spring-batch-core</artifactId>
+	        <version>4.3.6</version> <!-- 버전은 프로젝트에 맞게 조정 -->
+	    </dependency>
+		<dependency>
+	       <groupId>org.springframework.batch</groupId>
+	       <artifactId>spring-batch-infrastructure</artifactId>
+	       <version>4.3.6</version>
+	    </dependency>
+	    
+	    <!-- H2 Database 의존성 추가 (테스트용) -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+            <scope>runtime</scope>
+        </dependency>
+   
+	      <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-context</artifactId>
+         <version>${org.springframework-version}</version>
+         <exclusions>
+            <!-- Exclude Commons Logging in favor of SLF4j -->
+            <exclusion>
+               <groupId>commons-logging</groupId>
+               <artifactId>commons-logging</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-webmvc</artifactId>
+         <version>${org.springframework-version}</version>
+      </dependency>
+
+      <!-- AspectJ -->
+      <dependency>
+         <groupId>org.aspectj</groupId>
+         <artifactId>aspectjrt</artifactId>
+         <version>${org.aspectj-version}</version>
+      </dependency>
+      
+    <!-- Spring Security -->
+    <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring.security.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-web</artifactId>
+        <version>${spring.security.version}</version>
+    </dependency>
+
+      <!-- Logging -->
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+         <version>${org.slf4j-version}</version>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>jcl-over-slf4j</artifactId>
+         <version>${org.slf4j-version}</version>
+         <scope>runtime</scope>
+      </dependency>
+      <!--
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-log4j12</artifactId>
+         <version>${org.slf4j-version}</version>
+         <scope>runtime</scope>
+      </dependency>
+      -->
+      <dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-slf4j-impl</artifactId>
+	    <version>2.18.0</version>
+	    <scope>runtime</scope>
+  	  </dependency>
+  	  
+  	  <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>2.18.0</version>
+      </dependency>
+ 
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-1.2-api</artifactId>
+        <version>2.18.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+         <!-- log4j -->
+         <!-- <groupId>log4j</groupId>
+         <artifactId>log4j</artifactId>
+         <version>1.2.15</version> -->
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-core</artifactId>
+	    <version>2.18.0</version>
+         <exclusions>
+            <exclusion>
+               <groupId>javax.mail</groupId>
+               <artifactId>mail</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>javax.jms</groupId>
+               <artifactId>jms</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>com.sun.jdmk</groupId>
+               <artifactId>jmxtools</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>com.sun.jmx</groupId>
+               <artifactId>jmxri</artifactId>
+            </exclusion>
+         </exclusions>
+         <scope>runtime</scope>
+      </dependency>
+
+      <!-- @Inject -->
+      <dependency>
+         <groupId>javax.inject</groupId>
+         <artifactId>javax.inject</artifactId>
+         <version>1</version>
+      </dependency>
+
+      <!-- Servlet -->
+      <!-- 참조하는 서블릿 버전 3.1.0 선언 (artifact Id가 달라져요) -->
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>javax.servlet-api</artifactId>
+         <version>3.1.0</version>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet.jsp</groupId>
+         <artifactId>jsp-api</artifactId>
+         <version>2.1</version>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>jstl</artifactId>
+         <version>1.2</version>
+      </dependency>
+
+      <!-- Test <dependency> <groupId>junit</groupId> <artifactId>junit</artifactId> 
+         <version>4.7</version> <scope>test</scope> </dependency> -->
+
+      <!-- junit-jupiter-api (Junit5: 테스트 환경 구성 및 여러 기능을 제공하는 라이브러리) -->
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter-api</artifactId>
+         <version>5.8.2</version>
+         <scope>test</scope>
+      </dependency>
+
+      <!-- spring-test -->
+      <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-test</artifactId>
+         <version>${org.springframework-version}</version>
+         <scope>test</scope>
+      </dependency>
+
+
+      <!-- lombok 라이브러리 -->
+      <dependency>
+         <groupId>org.projectlombok</groupId>
+         <artifactId>lombok</artifactId>
+         <version>1.18.28</version>
+         <scope>provided</scope>
+      </dependency>
+
+      <!-- ojdbc8 -->
+      <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>12.2.0.1</version>
+        </dependency>
+
+      <!--spring-jdbc -->
+      <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-jdbc</artifactId>
+         <version>${org.springframework-version}</version>
+      </dependency>
+
+      <!-- HikariCP: 커넥션 풀 -->
+      <dependency>
+         <groupId>com.zaxxer</groupId>
+         <artifactId>HikariCP</artifactId>
+         <version>3.4.5</version>
+      </dependency>
+
+      <!-- mybatis -->
+      <dependency>
+         <groupId>org.mybatis</groupId>
+         <artifactId>mybatis</artifactId>
+         <version>3.5.6</version>
+      </dependency>
+
+      <!-- mybatis와 spring을 연동해 주는 라이브러리 -->
+      <dependency>
+         <groupId>org.mybatis</groupId>
+         <artifactId>mybatis-spring</artifactId>
+         <version>2.0.6</version>
+      </dependency>
+      
+      <!-- jackson-databind: 데이터를 JSON 형태로 파싱해 주는 라이브러리 또한, JSON 데이터를 Java 객체로도 
+         표현해 주는 라이브러리. -->
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-databind</artifactId>
+         <version>2.14.2</version>
+      </dependency>
+
+      <!-- java에서 mail을 보내기 위해 필요로 하는 라이브러리 -->
+     <!-- <dependency>
+         <groupId>javax.mail</groupId>
+         <artifactId>mail</artifactId>
+         <version>1.6.2</version>
+      </dependency> -->
+      <dependency>
+	    <groupId>com.sun.mail</groupId>
+	    <artifactId>javax.mail</artifactId>
+	    <version>1.6.2</version>
+	 </dependency>
+
+      <!-- 간단한 설정을 통해 메일 라이브러리를 사용할 수 있도록 도와주는 spring-context-support 메일 뿐만 아니라 
+         캐시메모리, 스케쥴링 UI와 관련된 다양한 부가기능을 지원하는 라이브러리 -->
+      <dependency>
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-context-support</artifactId>
+         <version>${org.springframework-version}</version>
+      </dependency>
+
+      <!-- spring-security-web -->
+      <dependency>
+         <groupId>org.springframework.security</groupId>
+         <artifactId>spring-security-web</artifactId>
+         <version>5.3.13.RELEASE</version>
+      </dependency>
+
+      <!-- 서블릿 버전 3.0 이상에서 사용 가능한 파일 업로드 API -->
+      <dependency>
+         <groupId>commons-fileupload</groupId>
+         <artifactId>commons-fileupload</artifactId>
+         <version>1.4</version>
+      </dependency>
+
+      <!-- commons-io: 파일을 읽고 쓸 수 있게 하는 기능을 모아놓은 라이브러리 -->
+      <dependency>
+         <groupId>commons-io</groupId>
+         <artifactId>commons-io</artifactId>
+         <version>2.11.0</version>
+      </dependency>
+
+      <!-- log4jdbc-log4j2-jdbc4.1 (DB log 출력) -->
+      <dependency>
+         <groupId>org.bgee.log4jdbc-log4j2</groupId>
+         <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
+         <version>1.16</version>
+      </dependency>
+
+      <!-- json-simple: 문자열 데이터를 JSON으로 변환해 주는 라이브러리 -->
+      <dependency>
+         <groupId>com.googlecode.json-simple</groupId>
+         <artifactId>json-simple</artifactId>
+         <version>1.1.1</version>
+      </dependency>
+      
+      <!-- chart.js 쉽게 사용하기 위해 List to json 해주는 라이브러리 -->
+      <dependency>
+    	<groupId>com.google.code.gson</groupId>
+    	<artifactId>gson</artifactId>
+		<version>2.8.5</version>
+	  </dependency>
+
+		<!-- 마이크로소프트 오피스 파일을 자바 언어로 읽고 쓰는 라이브러리(xlsx) -->
+		<dependency>
+		    <groupId>org.apache.poi</groupId>
+		    <artifactId>poi-ooxml</artifactId>
+		    <version>3.13</version>
+		</dependency>
+		<!-- 마이크로소프트 오피스 파일을 자바 언어로 읽고 쓰는 라이브러리(xls) -->	
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>3.13</version>
+		</dependency>
+		<!-- CoolSMS : sms 발송 api -->
+		<dependency>
+		    <groupId>net.nurigo</groupId>
+		    <artifactId>sdk</artifactId>
+		    <version>4.3.0</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.5.13</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpcore</artifactId>
+		    <version>4.4.14</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>javax.annotation</groupId>
+		    <artifactId>javax.annotation-api</artifactId>
+		    <version>1.3.2</version>
+		</dependency>
+
+
+
+   </dependencies> <!-- 의존성 라이브러리 선언 끝 -->
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>17</release>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.2.3</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>

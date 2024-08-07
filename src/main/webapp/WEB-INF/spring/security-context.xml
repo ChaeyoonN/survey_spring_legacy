@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+                        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- HTTP Security Configuration -->
+    <http>
+        <intercept-url pattern="/particiation/researchPopup" access="isAuthenticated()" />
+        <intercept-url pattern="/**" access="permitAll" />
+        
+        <form-login 
+            login-page="/particiation/login"
+            authentication-success-handler-ref="customAuthenticationSuccessHandler"
+             />
+            
+        <logout logout-url="/particiation/logout" />
+    </http>
+
+    <!-- In-Memory Authentication Configuration -->
+    <authentication-manager>
+        <authentication-provider>
+            <user-service>
+                <user name="user" password="{noop}password" authorities="ROLE_USER" />
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>
+
+    <!-- Custom Authentication Success Handler Bean -->
+    <beans:bean id="requestCache" class="org.springframework.security.web.savedrequest.HttpSessionRequestCache" />
+
+    <beans:bean id="customAuthenticationSuccessHandler" class="com.spring.survey.handler.CustomAuthenticationSuccessHandler">
+        <beans:property name="requestCache" ref="requestCache" />
+    </beans:bean>
+
+</beans:beans>

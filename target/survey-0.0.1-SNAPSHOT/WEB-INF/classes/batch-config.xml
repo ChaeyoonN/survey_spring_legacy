@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <beans xmlns="http://www.springframework.org/schema/beans" -->
+<!--        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" -->
+<!--        xmlns:context="http://www.springframework.org/schema/context" -->
+<!--        xmlns:batch="http://www.springframework.org/schema/batch" -->
+<!--        xsi:schemaLocation=" -->
+<!--            http://www.springframework.org/schema/beans  -->
+<!--            http://www.springframework.org/schema/beans/spring-beans.xsd -->
+<!--            http://www.springframework.org/schema/context  -->
+<!--            http://www.springframework.org/schema/context/spring-context.xsd -->
+<!--            http://www.springframework.org/schema/batch  -->
+<!--            http://www.springframework.org/schema/batch/spring-batch.xsd"> -->
+
+<!--     스프링 컨텍스트 설정 -->
+<!--     <context:component-scan base-package="com.spring.survey"/> -->
+
+<!--     데이터소스 설정 -->
+<!--     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> -->
+<!--         <property name="driverClassName" value="org.h2.Driver"/> -->
+<!--         <property name="url" value="jdbc:h2:mem:testdb"/> -->
+<!--         <property name="username" value="sa"/> -->
+<!--         <property name="password" value=""/> -->
+<!--     </bean> -->
+
+<!--     JobRepository 설정 -->
+<!--     <bean id="jobRepository" class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean"> -->
+<!--         <property name="dataSource" ref="dataSource"/> -->
+<!--         <property name="transactionManager" ref="transactionManager"/> -->
+<!--         <property name="databaseType" value="H2"/> -->
+<!--     </bean> -->
+
+<!--     TransactionManager 설정 -->
+<!--     <bean id="transactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"/> -->
+
+<!--     JobLauncher 설정 -->
+<!--     <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher"> -->
+<!--         <property name="jobRepository" ref="jobRepository"/> -->
+<!--     </bean> -->
+
+<!--     Job 설정 -->
+<!--     <batch:job id="exampleJob"> -->
+<!--         <batch:step id="exampleStep"> -->
+<!--             <batch:tasklet ref="exampleTasklet"/> -->
+<!--         </batch:step> -->
+<!--     </batch:job> -->
+
+<!--     Tasklet 설정 -->
+<!--     <bean id="exampleTasklet" class="com.spring.survey.batch.ExampleTasklet"/> -->
+<!-- </beans> -->
